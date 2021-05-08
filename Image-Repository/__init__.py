@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 
 from . import db, images
 
@@ -24,14 +24,14 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+    
+    app.config['UPLOAD_DIR'] = os.path.join(app.instance_path, 'uploads')
+    os.makedirs(app.config['UPLOAD_DIR'], exist_ok=True)
 
     # a simple page that says hello
     @app.route('/')
     def health():
-        return {
-                'status': 'green',
-                'details': 'Flask is up and running!'
-            }
+        return render_template('index.html')
 
     db.init_app(app)
     
