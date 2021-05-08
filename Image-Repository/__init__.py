@@ -1,7 +1,7 @@
 import os
-
 from flask import Flask
-from . import db
+
+from . import db, images
 
 
 def create_app(test_config=None):
@@ -34,5 +34,7 @@ def create_app(test_config=None):
             }
 
     db.init_app(app)
+    
+    app.register_blueprint(images.bp)
 
     return app
