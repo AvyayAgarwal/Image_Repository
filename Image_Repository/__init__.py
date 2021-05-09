@@ -1,7 +1,7 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect
 
-from . import db, images
+from . import db, images, auth
 
 
 def create_app(test_config=None):
@@ -30,11 +30,14 @@ def create_app(test_config=None):
 
     # a simple page that says hello
     @app.route('/')
-    def health():
-        return render_template('index.html')
+    def hello():
+        return redirect('/images')
 
     db.init_app(app)
     
+    app.register_blueprint(auth.bp)
     app.register_blueprint(images.bp)
+
+    app.add_url_rule("/images", endpoint="index")
 
     return app

@@ -7,18 +7,26 @@ from Image_Repository.db import get_db
 
 bp = Blueprint('images', __name__, url_prefix='/images')
 
-@bp.route('/', methods=["GET"])
+
+@bp.route("/")
+def index():
+    return render_template("repository/index.html", message="")
+
+
+@bp.route('/display', methods=["GET"])
 def display():
     try:
         db = get_db()
         data = db.execute('SELECT * FROM images').fetchall()
         images = [row[-1] for row in data]
         if len(images) <= 0:
-            return 'No images to display'
-        return render_template("images.html", images=images)
+            flash("No images to display")
+            return render_template("repository/index.html")
+        return render_template("repository/images.html", images=images)
 
     except Exception as e:
-        return f'Error in fetching image(s): {e}', 400
+        flash(f'Error in fetching image(s): {e}')
+        return render_template("repository/index.html")
 
 
 @bp.route('/upload', methods=["POST"])
@@ -34,10 +42,11 @@ def upload():
 
         db.executemany('INSERT INTO images (title, image) VALUES (?, ?)', filenames)
         db.commit()
-        return redirect('/images')
+        return redirect('/images/display')
 
     except Exception as e:
-        return f'Error in uploading image(s): {e}', 400
+        flash(f'Error in uploading image(s): {e}')
+        return render_template("repository/index.html")
 
 
 @bp.route('/delete', methods=["POST"])
@@ -51,7 +60,8 @@ def delete():
             os.remove(os.path.join(current_app.config['UPLOAD_DIR'], image))
         
         db.commit()
-        return redirect('/images')
+        return redirect('/images/display')
 
     except Exception as e:
-        return f'Error in deleting image(s): {e}', 400
+        flash(f'Error in deleting image(s): {e}')
+        return render_template("repository/index.html")
