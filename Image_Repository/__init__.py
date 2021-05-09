@@ -28,7 +28,10 @@ def create_app(test_config=None):
     app.config['UPLOAD_DIR'] = os.path.join('Image_Repository', 'static')
     os.makedirs(app.config['UPLOAD_DIR'], exist_ok=True)
 
-    # a simple page that says hello
+    @app.route("/health")
+    def health():
+        return "Green"
+
     @app.route('/')
     def hello():
         return redirect('/images')

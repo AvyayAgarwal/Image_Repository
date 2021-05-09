@@ -1,0 +1,4 @@
+include Image_Repository/schema.sql
+graft Image_Repository/static
+graft Image_Repository/templates
+global-exclude *.pyc
