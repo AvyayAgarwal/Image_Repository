@@ -1,4 +1,4 @@
-from flask import Blueprint, request, flash, current_app, render_template
+from flask import Blueprint, request, flash, current_app, render_template, redirect
 import os
 from werkzeug.utils import secure_filename
 import time
@@ -34,22 +34,24 @@ def upload():
 
         db.executemany('INSERT INTO images (title, image) VALUES (?, ?)', filenames)
         db.commit()
-        return 'File uploaded successfully!'
+        return redirect('/images')
 
     except Exception as e:
         return f'Error in uploading image(s): {e}', 400
 
 
-@bp.route('/delete/<image>', methods=["POST"])
-def delete(image):
+@bp.route('/delete', methods=["POST"])
+def delete():
     try:
         db = get_db()
-        data = db.execute('DELETE FROM images WHERE image = ?', (image,))
+        images = [(image,) for image in request.form]
+        print(images)
+        db.executemany('DELETE FROM images WHERE image = ?', images)
+        for image in request.form:
+            os.remove(os.path.join(current_app.config['UPLOAD_DIR'], image))
         
-        os.remove(os.path.join(current_app.config['UPLOAD_DIR'], image))
         db.commit()
-
-        return f'Image {image} delete successfully!'
+        return redirect('/images')
 
     except Exception as e:
-        return f'Error in deleting image {image}: {e}', 400
+        return f'Error in deleting image(s): {e}', 400
