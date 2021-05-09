@@ -2,7 +2,6 @@ attrs==21.2.0
 click==7.1.2
 coverage==5.5
 Flask==1.1.2
--e git+https://github.com/AvyayAgarwal/Image_Repository.git@7e4b553b8dc0f0822785ba827ce1bfdc40c64b87#egg=Image_Repository
 iniconfig==1.1.1
 itsdangerous==1.1.0
 Jinja2==2.11.3
