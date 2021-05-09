@@ -25,7 +25,7 @@ def create_app(test_config=None):
     except OSError:
         pass
     
-    app.config['UPLOAD_DIR'] = os.path.join(app.instance_path, 'uploads')
+    app.config['UPLOAD_DIR'] = os.path.join('Image_Repository', 'static')
     os.makedirs(app.config['UPLOAD_DIR'], exist_ok=True)
 
     # a simple page that says hello

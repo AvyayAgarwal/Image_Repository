@@ -1,4 +1,4 @@
-from flask import Blueprint, request, flash, current_app
+from flask import Blueprint, request, flash, current_app, render_template
 import os
 from werkzeug.utils import secure_filename
 import time
@@ -9,34 +9,47 @@ bp = Blueprint('images', __name__, url_prefix='/images')
 
 @bp.route('/', methods=["GET"])
 def display():
-    data = request.get_json()
-    print('display - data', request.args, data)
+    try:
+        db = get_db()
+        data = db.execute('SELECT * FROM images').fetchall()
+        images = [row[-1] for row in data]
+        if len(images) <= 0:
+            return 'No images to display'
+        return render_template("images.html", images=images)
 
-    return 'display'
+    except Exception as e:
+        return f'Error in fetching image(s): {e}', 400
 
 
 @bp.route('/upload', methods=["POST"])
 def upload():
     try:
-        d = get_db()
+        db = get_db()
         filenames = []
 
         for file in request.files.getlist('file'):
             name = secure_filename(str(int(time.time())) + '_' + file.filename)
             filenames.append((file.filename, name))
-            file.save(os.path.join(os.path.join(current_app.config['UPLOAD_DIR'], name)))
-        
-        d.executemany('INSERT INTO images (title, image) VALUES (?, ?)', filenames)
-        d.commit()
+            file.save(os.path.join(current_app.config['UPLOAD_DIR'], name))
+
+        db.executemany('INSERT INTO images (title, image) VALUES (?, ?)', filenames)
+        db.commit()
         return 'File uploaded successfully!'
 
     except Exception as e:
         return f'Error in uploading image(s): {e}', 400
 
 
-@bp.route('/delete', methods=["POST"])
-def delete():
-    data = request.get_json()
-    print('delete - data', data)
+@bp.route('/delete/<image>', methods=["POST"])
+def delete(image):
+    try:
+        db = get_db()
+        data = db.execute('DELETE FROM images WHERE image = ?', (image,))
+        
+        os.remove(os.path.join(current_app.config['UPLOAD_DIR'], image))
+        db.commit()
 
-    return 'delete'
+        return f'Image {image} delete successfully!'
+
+    except Exception as e:
+        return f'Error in deleting image {image}: {e}', 400

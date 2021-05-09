@@ -1,0 +1,18 @@
+<html>
+    <body>
+        <ul>
+        {% for image in images %}
+        <li>
+            <img src="/static/{{image}}" height="200">
+            
+            <form action = "/images/delete/{{image}}" method = "POST" 
+                enctype = "multipart/form-data">
+                <input type = "submit" value="Delete"/>
+            </form>
+            <br/>
+            <hr>
+        </li>
+        {% endfor %}
+    </ul>
+    </body>
+</html>
