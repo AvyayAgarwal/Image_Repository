@@ -21,6 +21,7 @@
     <form action = "/images/upload" method = "POST" 
         enctype = "multipart/form-data">
         <input type = "file" name = "file" accept="image/png, image/jpeg, image/jpg, image/gif" multiple=True/>
+        <input type="checkbox" id="ispublic" name="ispublic" value=True><label for="ispublic">Check if you want to images to be public</label>
         <input type = "submit"/>
     </form>
     <a href=/images/display>
