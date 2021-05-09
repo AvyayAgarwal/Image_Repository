@@ -11,7 +11,7 @@ bp = Blueprint('images', __name__, url_prefix='/images')
 
 @bp.route("/")
 def index():
-    return render_template("repository/index.html", message="")
+    return render_template("repository/index.html")
 
 
 @bp.route('/display', methods=["GET"])
